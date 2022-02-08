@@ -100,4 +100,19 @@ public class Contact {
         this.birthday = birthday;
     }
 
+    /*@Override
+    public String toString() {
+        return "Contact{" +
+                "contactID=" + contactID +
+                ", contactName='" + contactName + '\'' +
+                ", streetAddress='" + streetAddress + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", cellNumber='" + cellNumber + '\'' +
+                ", eMail='" + eMail + '\'' +
+                ", birthday=" + birthday +
+                '}';
+    }*/
 }
