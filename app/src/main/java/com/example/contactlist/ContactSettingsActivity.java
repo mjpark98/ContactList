@@ -75,7 +75,7 @@ public class ContactSettingsActivity extends AppCompatActivity {
 
         RadioButton rbAscending = findViewById(R.id.radioAscending);
         RadioButton rbDescending = findViewById(R.id.radioDescending);
-        if (sortBy.equalsIgnoreCase("ASC")){
+        if (sortOrder.equalsIgnoreCase("ASC")){
             rbAscending.setChecked(true);
         }
         else{
@@ -124,7 +124,7 @@ public class ContactSettingsActivity extends AppCompatActivity {
                 else{
                     getSharedPreferences("MyContactListPreferences",
                             Context.MODE_PRIVATE).edit()
-                            .putString("sortorder", "ASC").apply();
+                            .putString("sortorder", "DESC").apply();
                     }
                 }
         });
