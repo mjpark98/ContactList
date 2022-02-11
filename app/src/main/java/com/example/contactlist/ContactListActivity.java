@@ -71,7 +71,6 @@ public class ContactListActivity extends AppCompatActivity {
                 contactAdapter = new ContactAdapter(contacts, this);
                 contactAdapter.setOnItemClickListener(onItemClickListener);
                 contactList.setAdapter(contactAdapter);
-                //Log.v("contact List recylcer ", contacts.toString());
             }
             else{
                 Intent intent = new Intent(ContactListActivity.this, MainActivity.class);
