@@ -2,10 +2,15 @@ package com.example.contactlist;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,6 +55,10 @@ public class ContactMapActivity extends AppCompatActivity implements OnMapReadyC
     LocationCallback locationCallback;
     ArrayList<Contact> contacts = new ArrayList<>();
     Contact currentContact = null;
+    SensorManager sensorManager;
+    Sensor accelerometer;
+    Sensor magnetometer;
+    TextView textDirection;
 
 
 
@@ -56,8 +66,19 @@ public class ContactMapActivity extends AppCompatActivity implements OnMapReadyC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_map);
-
         Bundle extras = getIntent().getExtras();
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        if(accelerometer != null && magnetometer != null){
+            sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+            sensorManager.registerListener(mySensorEventListener, magnetometer, SensorManager.SENSOR_DELAY_FASTEST);
+        }else{
+            Toast.makeText(this, "Sensors not found", Toast.LENGTH_LONG).show();
+        }
+        textDirection = (TextView) findViewById(R.id.textHeading);
+
         try{
             ContactDataSource ds = new ContactDataSource(ContactMapActivity.this);
             ds.open();
@@ -87,6 +108,43 @@ public class ContactMapActivity extends AppCompatActivity implements OnMapReadyC
         initSettingsButton();
         initMapTypeButtons();
     }
+    private SensorEventListener mySensorEventListener = new SensorEventListener(){
+        public void onAccuracyChanged(Sensor sensor, int accuracy){}
+        float[] accelerometerValues;
+        float[]magneticValues;
+
+        public void onSensorChanged(SensorEvent event){
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+                accelerometerValues = event.values;
+            if(event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+                magneticValues = event.values;
+            if(accelerometerValues!= null && magneticValues != null){
+                float R[] = new float[9];
+                float I[] = new float[9];
+
+                boolean success = SensorManager.getRotationMatrix(R, I, accelerometerValues, magneticValues);
+
+                if(success) {
+                    float orientation[] = new float[3];
+                    SensorManager.getOrientation(R, orientation);
+
+                    float azimut = (float) Math.toDegrees(orientation[0]);
+                    if(azimut < 0.0f){azimut += 360.0f;}
+                    String direction;
+                    if(azimut >= 315 || azimut < 45) {direction = "N";}
+                    else if(azimut >= 225 && azimut < 315) {direction = "W";}
+                    else if(azimut >= 135 && azimut < 225) {direction = "S";}
+                    else {direction = "E";}
+                    textDirection.setText(direction);
+
+                }
+            }
+        }
+    };
+
+
+
+
     private void initListButton() {
         ImageButton ibList = findViewById(R.id.imageButtonList);
         ibList.setOnClickListener(new View.OnClickListener() {

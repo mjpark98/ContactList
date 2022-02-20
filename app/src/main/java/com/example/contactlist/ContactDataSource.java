@@ -5,8 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -31,7 +33,13 @@ public class ContactDataSource {
         boolean didSucceed = false;
         try {
             ContentValues initialValues = new ContentValues();
-            //Log.d("ContactDataSource", "content info Insert" + c.toString());
+
+            if(c.getPicture() != null) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                c.getPicture().compress(Bitmap.CompressFormat.PNG, 100, baos);
+                byte[] photo = baos.toByteArray();
+                initialValues.put("contactphoto", photo);
+            }
             initialValues.put("contactname", c.getContactName());
             initialValues.put("streetaddress", c.getStreetAddress());
             initialValues.put("city", c.getCity());
@@ -55,6 +63,12 @@ public class ContactDataSource {
             Long rowId = (long) c.getContactID();
             //Log.d("ContactDataSource", "content info Update" + c.toString());
             ContentValues updateValues = new ContentValues();
+            if(c.getPicture() != null) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                c.getPicture().compress(Bitmap.CompressFormat.PNG, 100, baos);
+                byte[] photo = baos.toByteArray();
+                updateValues.put("contactphoto", photo);
+            }
 
             updateValues.put("contactname", c.getContactName());
             updateValues.put("streetaddress", c.getStreetAddress());

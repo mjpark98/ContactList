@@ -18,6 +18,16 @@
         app:layout_constraintTop_toTopOf="parent"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         />
+    <TextView
+        android:id="@+id/textHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="WNW"
+        app:layout_constraintEnd_toEndOf="@+id/map"
+        app:layout_constraintStart_toStartOf="@+id/map"
+        app:layout_constraintTop_toTopOf="@+id/map"
+        />
 
     <LinearLayout
         android:id="@+id/linearLayout4"
